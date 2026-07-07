@@ -84,7 +84,7 @@ discord = DiscordWebhook()
 
 print("=" * 60)
 
-print("Roblox UGC Monitor V3")
+print("Roblox UGC Monitor V3 (economy.roblox.com для остатка)")
 
 print("=" * 60)
 
@@ -122,37 +122,8 @@ while True:
 
             continue
 
-        # --------------------------
-        # Получаем Marketplace одним POST
-        # --------------------------
-
-        collectible_ids = [
-
-            item["collectibleId"]
-
-            for item in all_items
-
-        ]
-
-        marketplace = api.get_marketplace(
-
-            collectible_ids
-
-        )
-
-        print(
-
-            "Marketplace:",
-
-            len(marketplace)
-
-        )
-
-        if not marketplace:
-
-            time.sleep(CHECK_INTERVAL)
-
-            continue
+        checked = 0
+        skipped_cooldown = 0
 
         # ----------------------------------------
         # Анализируем каждый предмет
@@ -160,27 +131,39 @@ while True:
 
         for item in all_items:
 
-            cid = item["collectibleId"]
             asset_id = item["assetId"]
 
-            if cid not in marketplace:
-                continue
-
-            market = marketplace[cid]
-
-            # ГЛАВНЫЙ ФИКС: если по этому предмету уже слали уведомление -
-            # не трогаем его вообще (не тратим запрос на get_resale, не шлём повторно)
+            # Уже отправляли уведомление - вообще не трогаем
             if cache.is_notified(asset_id):
                 continue
 
-            # Проверяем только если реально есть остаток
-            if market.get("remaining") is None:
+            # "Остывание" - не долбим economy.roblox.com по одному и тому же
+            # предмету каждые 8 секунд, проверяем не чаще раза в 5 минут
+            if not cache.needs_recheck(asset_id, ECONOMY_RECHECK_COOLDOWN):
+                skipped_cooldown += 1
+                continue
+
+            market = api.get_economy_details(asset_id)
+
+            time.sleep(ECONOMY_ITEM_DELAY)
+
+            checked += 1
+
+            if not market:
+                # Не лимитка или запрос не удался - помечаем как проверенное,
+                # чтобы не долбить снова каждый цикл, но без notified
+                cache.update(
+                    asset_id=asset_id,
+                    remaining=None,
+                    sales=None,
+                    stock=None
+                )
                 continue
 
             # История продаж нужна только если предмет
             # потенциально интересный
             resale = api.get_resale(
-                cid
+                item["collectibleId"]
             )
 
             cache_item = cache.get(asset_id)
@@ -197,8 +180,6 @@ while True:
 
             )
 
-            # Обновляем кэш данными, но notified оставляем как было
-            # (True если уже слали раньше - но мы досюда не дошли бы, см. is_notified выше)
             cache.update(
 
                 asset_id=asset_id,
@@ -286,7 +267,7 @@ while True:
         )
 
         print(
-            f"Проверено: {len(all_items)} предметов"
+            f"Проверено новых: {checked} | пропущено по cooldown: {skipped_cooldown} | всего в каталоге: {len(all_items)}"
         )
 
         print(
