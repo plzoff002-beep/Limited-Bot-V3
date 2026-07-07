@@ -9,7 +9,7 @@ WEBHOOK_URL = "https://discord.com/api/webhooks/1523682397605068861/hOuOUpb7EiBs
 # ===========================
 
 CHECK_INTERVAL = 8
-ITEM_DELAY = 0.15
+ITEM_DELAY = 0.5
 
 CACHE_FILE = "seen_items.json"
 
