@@ -98,7 +98,13 @@ class RobloxAPI:
 
                 r.raise_for_status()
 
-                return r.json()
+                parsed = r.json()
+
+                if not parsed:
+                    print(f"[EMPTY 200] {url}")
+                    print(f"  Raw body: {r.text[:500]}")
+
+                return parsed
 
             except Exception as e:
 
