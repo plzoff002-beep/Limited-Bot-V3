@@ -9,7 +9,8 @@ from config import (
     THUMBNAIL_URL,
     MARKETPLACE_ITEMS_URL,
     RESALE_URL,
-    MARKETPLACE_BATCH
+    MARKETPLACE_BATCH,
+    MARKETPLACE_BATCH_DELAY
 )
 
 
@@ -222,7 +223,10 @@ class RobloxAPI:
 
             if not data:
                 print(f"[MARKETPLACE] Батч {i}-{i+len(batch)} вернул пусто ({len(batch)} id)")
+                time.sleep(MARKETPLACE_BATCH_DELAY)
                 continue
+
+            time.sleep(MARKETPLACE_BATCH_DELAY)
 
             for item in data:
 
