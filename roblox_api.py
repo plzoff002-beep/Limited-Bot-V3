@@ -68,6 +68,10 @@ class RobloxAPI:
                         "x-csrf-token"
                     ] = self.csrf
 
+                    print(
+                        f"[CSRF] Получен токен, повторяю запрос: {url}"
+                    )
+
                     continue
 
                 if r.status_code == 429:
@@ -75,12 +79,22 @@ class RobloxAPI:
                     wait = (attempt + 1) * 3
 
                     print(
-                        f"429 -> sleep {wait}s"
+                        f"429 -> sleep {wait}s ({url})"
                     )
 
                     time.sleep(wait)
 
                     continue
+
+                if r.status_code >= 400:
+
+                    print(
+                        f"[HTTP {r.status_code}] {url}"
+                    )
+
+                    print(
+                        f"  Response body: {r.text[:500]}"
+                    )
 
                 r.raise_for_status()
 
@@ -88,9 +102,11 @@ class RobloxAPI:
 
             except Exception as e:
 
-                print(e)
+                print(f"[REQUEST ERROR] {url} -> {e}")
 
                 time.sleep(2)
+
+        print(f"[FAILED] Все попытки исчерпаны: {url}")
 
         return None
 
@@ -199,6 +215,7 @@ class RobloxAPI:
             )
 
             if not data:
+                print(f"[MARKETPLACE] Батч {i}-{i+len(batch)} вернул пусто ({len(batch)} id)")
                 continue
 
             for item in data:
