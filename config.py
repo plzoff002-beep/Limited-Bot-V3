@@ -2,7 +2,7 @@
 # Discord
 # ===========================
 
-WEBHOOK_URL = "ТВОЙ_WEBHOOK"
+WEBHOOK_URL = "https://discord.com/api/webhooks/1523682397605068861/hOuOUpb7EiBsLKJisC5G8K8U8K_RZgeHg_RJ5Jg8OGEo_4HmzSXl6lnpfjIwlnDTFU3v"
 
 # ===========================
 # Интервалы
