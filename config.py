@@ -77,4 +77,4 @@ SELL_OUT_REMAINING = 200
 
 MIN_DAILY_SALES = 20
 
-MARKETPLACE_BATCH = 40
+MARKETPLACE_BATCH = 1  # временно уменьшено с 40 для диагностики - см. чат
