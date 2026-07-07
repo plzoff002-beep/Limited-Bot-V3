@@ -96,7 +96,14 @@ def should_notify(
 
     remaining = marketplace.get("remaining")
 
+    # economy.roblox.com не отдаёт TotalQuantity для новых UGC-коллекционных
+    # предметов (только для старых классических Limited) - поэтому берём
+    # общий тираж из marketplace, а если там пусто - из данных поиска
+    # (catalog.roblox.com/v2/search/items/details -> totalQuantity),
+    # он там был всегда и не зависит от economy.roblox.com
     stock = marketplace.get("stock")
+    if stock is None:
+        stock = item.get("stock")
 
     sales = marketplace.get("sales")
 
