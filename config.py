@@ -37,6 +37,12 @@ THUMBNAIL_URL = \
 MARKETPLACE_ITEMS_URL = \
 "https://apis.roblox.com/marketplace-items/v1/items/details"
 
+# Резервный источник данных по остатку - другой поддомен,
+# без CSRF, без батчей. Используем вместо marketplace-items,
+# который жёстко режется 429/пустыми ответами с IP Render'а.
+ECONOMY_DETAILS_URL = \
+"https://economy.roblox.com/v2/assets/{}/details"
+
 RESALE_URL = \
 "https://apis.roblox.com/marketplace-sales/v1/item/{}/resale-data"
 
@@ -79,3 +85,9 @@ MIN_DAILY_SALES = 20
 
 MARKETPLACE_BATCH = 5  # уменьшено с 40 для диагностики - см. чат
 MARKETPLACE_BATCH_DELAY = 1.0  # пауза между батч-запросами (сек), чтобы не словить 429
+
+# Через economy.roblox.com теперь ходим по одному предмету - чтобы не заваливать
+# API 240 запросами каждый цикл, перепроверяем remaining не чаще, чем раз в это
+# количество секунд (300 = 5 минут)
+ECONOMY_RECHECK_COOLDOWN = 300
+ECONOMY_ITEM_DELAY = 0.3  # пауза между запросами economy.roblox.com (сек)
