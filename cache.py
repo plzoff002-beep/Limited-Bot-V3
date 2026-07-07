@@ -61,6 +61,25 @@ class Cache:
         entry = self.data.get(str(asset_id))
         return bool(entry and entry.get("notified"))
 
+    def needs_recheck(self, asset_id, cooldown_seconds):
+        """
+        True, если по предмету ещё не было проверки, или последняя
+        проверка была раньше, чем cooldown_seconds назад.
+        """
+        entry = self.data.get(str(asset_id))
+
+        if not entry or not entry.get("updated"):
+            return True
+
+        try:
+            last_checked = datetime.fromisoformat(entry["updated"])
+        except ValueError:
+            return True
+
+        elapsed = (datetime.utcnow() - last_checked).total_seconds()
+
+        return elapsed >= cooldown_seconds
+
     def update(
 
         self,
