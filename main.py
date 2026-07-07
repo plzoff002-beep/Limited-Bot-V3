@@ -196,15 +196,8 @@ while True:
             if not analysis["notify"]:
 
                 print(
-
-                    "[SKIP]",
-
-                    item["name"],
-
-                    "|",
-
-                    analysis["reason"]
-
+                    f"[SKIP] {item['name']} | stock={analysis['stock']}, "
+                    f"remaining={analysis['remaining']}, avg_sales={analysis['averageSales']}"
                 )
 
                 time.sleep(
