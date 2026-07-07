@@ -257,6 +257,41 @@ class RobloxAPI:
         return result
 
 
+    def get_economy_details(self, asset_id):
+        """
+        Резервный источник остатка через economy.roblox.com - работает по
+        одному предмету за раз (без батчей, без CSRF). Используем вместо
+        marketplace-items, который жёстко режется 429/пустыми ответами.
+
+        Возвращает {"remaining": int, "stock": int, "sales": int, "price": int}
+        или None, если предмет не лимитка / запрос не удался.
+        """
+        from config import ECONOMY_DETAILS_URL
+
+        url = ECONOMY_DETAILS_URL.format(asset_id)
+
+        data = self.request("GET", url)
+
+        if not data:
+            return None
+
+        if not (data.get("IsLimited") or data.get("IsLimitedUnique")):
+            return None
+
+        total = data.get("TotalQuantity")
+        remaining = data.get("Remaining")
+
+        sales = None
+        if total is not None and remaining is not None:
+            sales = total - remaining
+
+        return {
+            "remaining": remaining,
+            "stock": total,
+            "sales": sales,
+            "price": data.get("PriceInRobux"),
+        }
+
     def get_thumbnail(self, asset_id):
 
         data = self.request(
