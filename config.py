@@ -77,4 +77,5 @@ SELL_OUT_REMAINING = 200
 
 MIN_DAILY_SALES = 20
 
-MARKETPLACE_BATCH = 1  # временно уменьшено с 40 для диагностики - см. чат
+MARKETPLACE_BATCH = 5  # уменьшено с 40 для диагностики - см. чат
+MARKETPLACE_BATCH_DELAY = 1.0  # пауза между батч-запросами (сек), чтобы не словить 429
